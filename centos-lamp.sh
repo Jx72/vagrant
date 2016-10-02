@@ -1,15 +1,26 @@
 #!/bin/bash
 
-echo Install Linux, Apache, MySQL, PHP (LAMP) stack On CentOS 7
+main() {
+	echo Install Linux, Apache, MySQL, PHP (LAMP) stack On CentOS 7
+	install_apache
+	install_mysql
+	install_php
+	echo Processing of LAMP is completed!
+}
 
-echo Install Apache and start the web service
-yum install -y httpd 
-systemctl start httpd.service && systemctl enable httpd.service 
+install_apache() {
+	echo Install Apache and start the web service
+	yum install -y httpd >> /tmp/centos-lamp.log 2>&1
+	systemctl start httpd.service >> /tmp/centos-lamp.log 2>&1
+	systemctl enable httpd.service >> /tmp/centos-lamp.log 2>&1
+}
 
-echo Install MySQL (MariaDB) and start the database service
-yum install -y mariadb-server mariadb 
-systemctl start mariadb.service && systemctl enable mariadb.service 
-mysql_secure_installation <<EOF
+install_mysql() {
+	echo Install MySQL (MariaDB) and start the database service
+	yum install -y mariadb-server mariadb >> /tmp/centos-lamp.log 2>&1
+	systemctl start mariadb.service >> /tmp/centos-lamp.log 2>&1
+	systemctl enable mariadb.service >> /tmp/centos-lamp.log 2>&1
+	mysql_secure_installation <<EOF
 
 y
 db2016
@@ -18,10 +29,14 @@ y
 y
 y
 y
-EOF
+EOF >> /tmp/centos-lamp.log 2>&1
+}
 
-echo Install PHP
-yum install -y php php-pear php-mysql phpMyAdmin 
-systemctl restart httpd.service 
+install_php() {
+	echo Install PHP
+	yum install -y php php-pear php-mysql phpMyAdmin >> /tmp/centos-lamp.log 2>&1
+	systemctl restart httpd.service >> /tmp/centos-lamp.log 2>&1
+}
 
-echo LAMP installation is COMPLETED!
+main
+exit 0

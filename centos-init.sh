@@ -1,13 +1,20 @@
 #!/bin/bash
 
-echo $HOSTNAME is initailizing the system...
+main() {
+	echo $HOSTNAME is initailizing the system
+	add_repo
+	update
+}
 
-echo Set the timezone to Australia/Sydney
-timedatectl set-timezone Australia/Sydney
+update() {
+	echo Update the CentOS 7 system...
+	yum update -y >> /tmp/centos-init.log 2>&1
+}
 
-echo Update the CentOS 7 system...
-yum update -y 
+add_repo() {
+	echo Add the EPEL repository
+	yum install -y epel-release >> /tmp/centos-init.log 2>&1
+}
 
-echo Add the CentOS 7 EPEL repository
-yum install -y epel-release
-
+main
+exit 0
