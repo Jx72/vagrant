@@ -29,7 +29,7 @@ y
 y
 y
 y
-EOF >> /tmp/centos-lamp.log 2>&1
+EOF
 }
 
 install_php() {
