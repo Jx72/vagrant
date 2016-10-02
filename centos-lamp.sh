@@ -20,16 +20,24 @@ install_mysql() {
 	yum install -y mariadb-server mariadb >> /tmp/centos-lamp.log 2>&1
 	systemctl start mariadb.service >> /tmp/centos-lamp.log 2>&1
 	systemctl enable mariadb.service >> /tmp/centos-lamp.log 2>&1
-	mysql_secure_installation <<EOF
 
-y
-db2016
-db2016
-y
-y
-y
-y
-EOF
+# 	mysql_secure_installation <<EOF
+# 
+# y
+# db2016
+# db2016
+# y
+# y
+# y
+# y
+# EOF
+
+	mysql -sfu root < "UPDATE mysql.user SET Password=PASSWORD('root') WHERE User='root';
+	DELETE FROM mysql.user WHERE User='';
+	DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
+	DROP DATABASE IF EXISTS test;
+	DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
+	FLUSH PRIVILEGES;"
 }
 
 install_php() {
