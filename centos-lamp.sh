@@ -1,5 +1,8 @@
 #!/bin/bash
 
+base_dir=$1
+vhost=$2
+
 main() {
 	echo "Install Linux, Apache, MySQL, PHP (LAMP) stack On CentOS 7"
 	install_apache
@@ -48,9 +51,6 @@ install_php() {
 }
 
 setup_tstpg() {
-	base_dir=$1
-	vhost=$2
-
 	www_dir=$base_dir/www
 	html_dir=$www_dir/html
 	phtml_dir=$www_dir/$vhost/public_html
