@@ -62,9 +62,11 @@ setup_tstpg() {
 
 	echo "To create the HTML directory for $vhost"
 	mkdir -p $phtml_dir
+	mkdir -p $php_dir
 
 	echo "Grant Permissions accordingly"
 	chown -R $USER:$USER $phtml_dir
+	chown -R $USER:$USER $php_dir
 
 	echo "To create a demo of HTML page"
 	echo "Welcome to test page" > $phtml_dir/index.html

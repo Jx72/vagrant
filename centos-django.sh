@@ -16,7 +16,7 @@ pip install django >> /tmp/provision-script.log 2>&1
 echo "Django Version: " && django-admin --version
 
 echo "Creating a Django Test Project"
-cd $www_dir
+cd $www_dir/$vhost_dev
 django-admin startproject $djg_prj_name
 
 echo "Create a new database"
