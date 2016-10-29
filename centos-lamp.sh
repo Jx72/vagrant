@@ -3,18 +3,35 @@
 base_dir=$1
 vhost_dev=$2
 
+www_dir=$base_dir/www
+
 main() {
 	echo "Install Linux, Apache, MySQL, PHP (LAMP) stack On CentOS 7"
 	install_apache
 	install_mysql
 	install_php
-	setup_tstpg
+	html_test
+	php_test
 	echo "Processing of LAMP is completed!"
 }
 
 install_apache() {
 	echo "Install Apache and start the web service"
 	yum install -y httpd >& /tmp/centos-lamp.log 
+
+	echo "To set Apache (HTTPD) configration"
+	echo "To modify /etc/httpd/conf/httpd.conf"
+	mv /etc/httpd/conf/httpd.conf /etc/httpd/conf/httpd.conf.old
+	sed -e 's#\"/var/www\"#\"'$www_dir'\"#' \
+		-e 's#\"/var/www/html\"#\"'$www_dir'/html\"#' \
+		</etc/httpd/conf/httpd.conf.old >/etc/httpd/conf/httpd.conf
+
+	echo "To create directories for sites configration"
+	mkdir /etc/httpd/sites-available
+	mkdir /etc/httpd/sites-enabled
+
+	echo "IncludeOptional sites-enabled/*.conf" >> /etc/httpd/conf/httpd.conf
+
 	systemctl start httpd.service >& /tmp/centos-lamp.log 
 	systemctl enable httpd.service >& /tmp/centos-lamp.log 
 }
@@ -50,11 +67,9 @@ install_php() {
 	systemctl restart httpd.service >& /tmp/centos-lamp.log 
 }
 
-setup_tstpg() {
-	www_dir=$base_dir/www
+html_test() {
 	html_dir=$www_dir/html
 	phtml_dir=$www_dir/$vhost_dev/public_html
-	php_dir=$www_dir/$vhost_dev/php
 
 	echo "To create the directory for web server"
 	mkdir -p $html_dir
@@ -62,28 +77,13 @@ setup_tstpg() {
 
 	echo "To create the HTML directory for $vhost"
 	mkdir -p $phtml_dir
-	mkdir -p $php_dir
 
-	echo "Grant Permissions accordingly"
-	chown -R $USER:$USER $phtml_dir
-	chown -R $USER:$USER $php_dir
+	# echo "Grant Permissions accordingly"
+	# chown -R $USER:$USER $phtml_dir
+	# chown -R $USER:$USER $php_dir
 
 	echo "To create a demo of HTML page"
 	echo "Welcome to test page" > $phtml_dir/index.html
-
-	echo "To create PHP info test page; please remove it after test"
-	echo "<?php phpinfo(); ?>" > $php_dir/index.php
-
-	echo "To modify /etc/httpd/conf/httpd.conf"
-	cp /etc/httpd/conf/httpd.conf /etc/httpd/conf/httpd.conf.old
-	sed -e 's#\"/var/www\"#\"'"$www_dir"'\"#' \
-		-e 's#\"/var/www/html\"#\"'$html_dir'\"#' /etc/httpd/conf/httpd.conf
-
-	echo "To create directories for sites configration"
-	mkdir /etc/httpd/sites-available
-	mkdir /etc/httpd/sites-enabled
-
-	echo "IncludeOptional sites-enabled/*.conf" >> /etc/httpd/conf/httpd.conf
 
 	echo "To set Virtual Host"
 	echo "
@@ -92,8 +92,21 @@ setup_tstpg() {
 	    ServerAlias ${vhost_dev}
 	    DocumentRoot ${phtml_dir}
 	</VirtualHost>
-	" > /etc/httpd/sites-available/$vhost_dev.conf
+	" >> /etc/httpd/sites-available/$vhost_dev.conf
 
+	echo "To enable the New Virtual Host Files"
+	ln -s /etc/httpd/sites-available/$vhost_dev.conf /etc/httpd/sites-enabled/$vhost_dev.conf
+	apachectl restart
+}
+
+php_test() {
+	php_dir=$www_dir/$vhost_dev/php
+	mkdir -p $php_dir
+
+	echo "To create PHP info test page"
+	echo "<?php phpinfo(); ?>" > $php_dir/default.php
+
+	echo "To set Virtual Host"
 	echo "
 	<VirtualHost *:80>
 		ServerName php.${vhost_dev}
@@ -101,10 +114,9 @@ setup_tstpg() {
 	</VirtualHost>
 	" >> /etc/httpd/sites-available/$vhost_dev.conf
 
-	echo "To enable the New Virtual Host Files"
-	ln -s /etc/httpd/sites-available/$vhost_dev.conf /etc/httpd/sites-enabled/$vhost_dev.conf
-	apachectl restart
+	apachectl restart	
 }
+
 
 main
 exit 0

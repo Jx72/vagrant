@@ -9,6 +9,9 @@ html_dir=$www_dir/html
 phtml_dir=$www_dir/$vhost_dev/public_html
 djg_prj_dir=$www_dir/$vhost_dev/$djg_prj_name
 
+echo "Install Web Server Gateway Interface(WSGI)"
+yum install -y mod_wsgi >> /tmp/provision-script.log 2>&1
+
 echo "Install Django through pip"
 yum install -y python-pip >> /tmp/provision-script.log 2>&1
 pip install --upgrade pip >> /tmp/provision-script.log 2>&1
