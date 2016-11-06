@@ -90,12 +90,12 @@ chg_own_mod_sel() {
 	# Allow write only to specific dirs
 	if [ $# -ge 2 ]; then
 		err_log=$2
-		chcon -t httpd_sys_rw_content_t err_log -R
+		chcon -t httpd_sys_rw_content_t $err_log -R
 	fi
 
 	if [ $# -eq 3 ]; then
 		cust_log=$3
-		chcon -t httpd_sys_rw_content_t cust_log -R	
+		chcon -t httpd_sys_rw_content_t $cust_log -R	
 	fi
 }
 
