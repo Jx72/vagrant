@@ -142,7 +142,7 @@ crt_php_test() {
 	mkdir -p $php_dir
 
 	logs_dir=$base_dir/logs/$php_vhost_dev
-	mkdir -r $logs_dir
+	mkdir -p $logs_dir
 
 	echo "To create PHP info test page"
 	echo "<?php phpinfo(); ?>" > $php_dir/default.php
